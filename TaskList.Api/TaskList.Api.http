@@ -1,20 +1,25 @@
 ### TaskList API - HTTP Testing File
 ### This file contains sample HTTP requests for testing the TaskList API
+### 
+### API VERSIONING: All endpoints now support v1.0
+### - URL Versioning: api/v1/auth/register
+### - Header Versioning: X-Api-Version: 1.0
+### - Query String: api/auth/register?api-version=1.0
 
 # Set the base URL for your API
 @baseUrl = https://localhost:7191
 @httpUrl = http://localhost:5045
-s
+
 # Variables to store tokens and IDs (will be set after successful requests)
 @token = 
 @userId = 
 
 ###############################################
-# Authentication Endpoints
+# Authentication Endpoints (v1)
 ###############################################
 
-### Register New User
-POST {{baseUrl}}/api/auth/register
+### Register New User (URL Versioning)
+POST {{baseUrl}}/api/v1/auth/register
 Content-Type: application/json
 
 {
