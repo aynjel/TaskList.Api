@@ -1,11 +1,14 @@
 using System.Text;
 using Asp.Versioning;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Serilog;
 using TaskList.Api.Configuration;
 using TaskList.Application.Common;
+using TaskList.Application.Validators;
 using TaskList.Infrastucture.Configuration;
 using TaskList.Infrastucture.Persistence;
 
@@ -34,7 +37,11 @@ try
 
     builder.Services.AddControllers();
 
-// Configure API Versioning
+    // Add FluentValidation
+    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddValidatorsFromAssemblyContaining<CreateTaskRequestValidator>();
+
+    // Configure API Versioning
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);

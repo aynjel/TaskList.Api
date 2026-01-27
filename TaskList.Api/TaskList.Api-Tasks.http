@@ -1,0 +1,426 @@
+### TaskList API - Tasks CRUD Testing
+### Prerequisites: Login first and copy the access token
+
+# Base URL
+@baseUrl = https://localhost:7191
+@httpUrl = http://localhost:5045
+
+# Store your access token here after login
+@accessToken = 
+
+###############################################
+# 1. CREATE TASKS
+###############################################
+
+### Create Task - Work Task
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Complete project documentation",
+  "description": "Write comprehensive documentation for the TaskList API including all CRUD operations",
+  "dueDate": "2026-02-15T17:00:00Z",
+  "priority": 3,
+  "category": 1
+}
+
+### Create Task - Personal Task
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Buy groceries",
+  "description": "Milk, eggs, bread, fruits",
+  "dueDate": "2026-01-28T10:00:00Z",
+  "priority": 2,
+  "category": 2
+}
+
+### Create Task - Shopping Task
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Buy laptop accessories",
+  "description": "Mouse, keyboard, monitor",
+  "dueDate": "2026-02-01T00:00:00Z",
+  "priority": 1,
+  "category": 3
+}
+
+### Create Task - Minimal (Only Title)
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Quick reminder task"
+}
+
+### Create Task - Validation Error (Empty Title)
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "",
+  "description": "This should fail"
+}
+
+### Create Task - Validation Error (Title Too Long)
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "This title is way too long and exceeds the maximum allowed length of 200 characters which should trigger a validation error because we want to ensure that titles are concise and readable for users without taking up too much space in the user interface and database",
+  "description": "Test"
+}
+
+### Create Task - Validation Error (Invalid Priority)
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Test Task",
+  "priority": 99
+}
+
+### Create Task - Validation Error (Invalid Category)
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Test Task",
+  "category": 100
+}
+
+### Create Task - Validation Error (Invalid Status - Status not allowed in Create)
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Test Task",
+  "status": 99
+}
+
+### Create Task - Validation Error (Due Date in Past)
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Test Task",
+  "dueDate": "2020-01-01T00:00:00Z"
+}
+
+### Create Task - Validation Error (Description Too Long)
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Test Task",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris."
+}
+
+### Create Task - Multiple Validation Errors
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "",
+  "priority": 99,
+  "category": 100,
+  "dueDate": "2020-01-01T00:00:00Z"
+}
+
+
+###############################################
+# 2. READ TASKS
+###############################################
+
+### Get All Tasks (Paginated)
+GET {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Page 2
+GET {{baseUrl}}/api/v1/tasks?PageNumber=2&PageSize=5
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Filter by Status (Todo)
+GET {{baseUrl}}/api/v1/tasks?Status=1
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Filter by Status (InProgress)
+GET {{baseUrl}}/api/v1/tasks?Status=2
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Filter by Status (Completed)
+GET {{baseUrl}}/api/v1/tasks?Status=3
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Filter by Priority (High)
+GET {{baseUrl}}/api/v1/tasks?Priority=3
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Filter by Category (Work)
+GET {{baseUrl}}/api/v1/tasks?Category=1
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Search by Title
+GET {{baseUrl}}/api/v1/tasks?SearchTerm=documentation
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Multiple Filters
+GET {{baseUrl}}/api/v1/tasks?Status=1&Priority=3&Category=1
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Date Range
+GET {{baseUrl}}/api/v1/tasks?DueDateFrom=2026-01-27&DueDateTo=2026-02-01
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Sort by Title Ascending
+GET {{baseUrl}}/api/v1/tasks?SortBy=title&SortDescending=false
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Sort by Due Date
+GET {{baseUrl}}/api/v1/tasks?SortBy=duedate&SortDescending=false
+Authorization: Bearer {{accessToken}}
+
+### Get Tasks - Sort by Priority
+GET {{baseUrl}}/api/v1/tasks?SortBy=priority&SortDescending=true
+Authorization: Bearer {{accessToken}}
+
+### Get Specific Task by ID (Replace {id} with actual ID)
+GET {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+
+### Get Non-Existent Task
+GET {{baseUrl}}/api/v1/tasks/99999
+Authorization: Bearer {{accessToken}}
+
+###############################################
+# 3. UPDATE TASKS
+###############################################
+
+### Update Task - Full Update (Replace {id} with actual ID)
+PUT {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Complete project documentation (UPDATED)",
+  "description": "Updated description with more details",
+  "dueDate": "2026-02-20T17:00:00Z",
+  "priority": 3,
+  "category": 1,
+  "status": 2
+}
+
+### Update Task - Partial Update (Only Title)
+PUT {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "New Title Only"
+}
+
+### Update Task - Change Priority
+PUT {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "priority": 3
+}
+
+### Update Task - Change Status
+PUT {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": 2
+}
+
+### Update Task Status Only (PATCH)
+PATCH {{baseUrl}}/api/v1/tasks/1/status
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+2
+
+### Update Task Status - Mark as Completed
+PATCH {{baseUrl}}/api/v1/tasks/1/status
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+3
+
+### Update Task Status - Mark as Cancelled
+PATCH {{baseUrl}}/api/v1/tasks/1/status
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+4
+
+### Update Non-Existent Task
+PUT {{baseUrl}}/api/v1/tasks/99999
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "This should return 404"
+}
+
+### Update Task - Validation Error (Invalid Priority)
+PUT {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "priority": 99
+}
+
+### Update Task - Validation Error (Invalid Status)
+PUT {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "status": 99
+}
+
+### Update Task - Validation Error (Invalid Category)
+PUT {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "category": 100
+}
+
+### Update Task - Validation Error (Title Too Long)
+PUT {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "This title is way too long and exceeds the maximum allowed length of 200 characters which should trigger a validation error because we want to ensure that titles are concise and readable"
+}
+
+
+###############################################
+# 4. DELETE TASKS
+###############################################
+
+### Delete Task (Replace {id} with actual ID)
+DELETE {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+
+### Delete Non-Existent Task
+DELETE {{baseUrl}}/api/v1/tasks/99999
+Authorization: Bearer {{accessToken}}
+
+###############################################
+# 5. AUTHENTICATION TESTS
+###############################################
+
+### Try to Access Tasks Without Token (Should return 401)
+GET {{baseUrl}}/api/v1/tasks
+
+### Try to Create Task Without Token (Should return 401)
+POST {{baseUrl}}/api/v1/tasks
+Content-Type: application/json
+
+{
+  "title": "This should fail"
+}
+
+###############################################
+# 6. COMPLETE WORKFLOW EXAMPLE
+###############################################
+
+### Step 1: Create a new task
+POST {{baseUrl}}/api/v1/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Workflow Test Task",
+  "description": "Testing complete CRUD workflow",
+  "dueDate": "2026-02-10T12:00:00Z",
+  "priority": 2,
+  "category": 1
+}
+
+### Step 2: Get the created task (use ID from step 1)
+GET {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+
+### Step 3: Update task to InProgress
+PATCH {{baseUrl}}/api/v1/tasks/1/status
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+2
+
+### Step 4: Update task details
+PUT {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Workflow Test Task (Updated)",
+  "priority": 3
+}
+
+### Step 5: Mark as Completed
+PATCH {{baseUrl}}/api/v1/tasks/1/status
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+3
+
+### Step 6: Delete the task
+DELETE {{baseUrl}}/api/v1/tasks/1
+Authorization: Bearer {{accessToken}}
+
+###############################################
+# ENUM VALUES REFERENCE
+###############################################
+
+# TaskItemStatus:
+# 1 = Todo
+# 2 = InProgress
+# 3 = Completed
+# 4 = Cancelled
+
+# PriorityLevel:
+# 1 = Low
+# 2 = Medium
+# 3 = High
+
+# CategoryType:
+# 1 = Work
+# 2 = Personal
+# 3 = Shopping
+
+###############################################
+# TESTING NOTES
+###############################################
+
+# 1. Login first using /api/v1/auth/login
+# 2. Copy the access token from response
+# 3. Update @accessToken variable at the top
+# 4. Replace {id} with actual task IDs in URLs
+# 5. Access token expires after 30 minutes - refresh if needed

@@ -11,8 +11,6 @@ namespace TaskList.Api.Controllers.V1;
 public class AuthController(IAuthService authService, ILogger<AuthController> logger, IConfiguration configuration) 
     : BaseApiController(logger, configuration)
 {
-    private readonly IAuthService _authService = authService;
-
     /// <summary>
     /// Register a new user
     /// </summary>
@@ -25,7 +23,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     {
         try
         {
-            var response = await _authService.RegisterAsync(request);
+            var response = await authService.RegisterAsync(request);
             SetRefreshTokenCookie(response.RefreshToken);
             return Ok(response);
         }
@@ -51,7 +49,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     {
         try
         {
-            var response = await _authService.LoginAsync(request);
+            var response = await authService.LoginAsync(request);
             SetRefreshTokenCookie(response.RefreshToken);
             return Ok(response);
         }
@@ -83,7 +81,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
                 return Unauthorized<AuthResponse>("Refresh token is required.");
             }
 
-            var response = await _authService.RefreshTokenAsync(refreshToken);
+            var response = await authService.RefreshTokenAsync(refreshToken);
             SetRefreshTokenCookie(response.RefreshToken);
             
             return Ok(response);
@@ -113,7 +111,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
             
             if (!string.IsNullOrEmpty(refreshToken))
             {
-                await _authService.RevokeTokenAsync(refreshToken);
+                await authService.RevokeTokenAsync(refreshToken);
             }
             
             ClearRefreshTokenCookie();
@@ -146,9 +144,9 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
                 return Unauthorized<CurrentUserResponse>("Invalid token.");
             }
 
-            var currentUser = await _authService.GetCurrentUserAsync(userId);
+            var currentUser = await authService.GetCurrentUserAsync(userId);
             
-            if (currentUser == null)
+            if (currentUser is null)
             {
                 return NotFound<CurrentUserResponse>("User not found.");
             }
