@@ -1,6 +1,81 @@
-@TaskList.Api_HostAddress = http://localhost:5045
+### TaskList API - HTTP Testing File
+### This file contains sample HTTP requests for testing the TaskList API
 
-GET {{TaskList.Api_HostAddress}}/weatherforecast/
+# Set the base URL for your API
+@baseUrl = https://localhost:7191
+@httpUrl = http://localhost:5045
+s
+# Variables to store tokens and IDs (will be set after successful requests)
+@token = 
+@userId = 
+
+###############################################
+# Authentication Endpoints
+###############################################
+
+### Register New User
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "password": "Password123"
+}
+
+### Register Another User (for testing)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Jane Smith",
+  "email": "jane.smith@example.com",
+  "password": "SecurePass456"
+}
+
+### Register User - Validation Error (Short Password)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "123"
+}
+
+### Register User - Validation Error (Invalid Email)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "invalid-email",
+  "password": "Password123"
+}
+
+### Register User - Duplicate Email Error
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Duplicate User",
+  "email": "john.doe@example.com",
+  "password": "Password123"
+}
+
+GET {{httpUrl}}/
 Accept: application/json
 
-###
+### 9. Get OpenAPI Specification
+GET {{baseUrl}}/openapi/v1.json
+Accept: application/json
+
+###############################################
+# Protected Endpoints (Add JWT token to test)
+###############################################
+
+### 10. Example Protected Request
+# Replace @token with actual JWT token from registration/login response
+GET {{baseUrl}}/api/tasks
+Authorization: Bearer {{token}}
+Accept: application/json
