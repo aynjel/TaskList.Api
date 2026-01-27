@@ -6,6 +6,7 @@ using TaskList.Application.Common;
 using TaskList.Application.Interfaces;
 using TaskList.Infrastucture.Indentity;
 using TaskList.Infrastucture.Persistence;
+using TaskList.Infrastucture.Persistence.Repositories;
 using TaskList.Infrastucture.Services;
 
 namespace TaskList.Infrastucture.Configuration;
@@ -41,6 +42,12 @@ public static class DependencyInjection
         // Register services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        
+        // Register repositories
+        services.AddScoped<ITaskRepository, TaskRepository>();
+        
+        // Register domain services
+        services.AddScoped<ITaskService, TaskService>();
 
         return services;
     }

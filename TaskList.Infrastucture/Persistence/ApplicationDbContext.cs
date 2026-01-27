@@ -8,11 +8,13 @@ namespace TaskList.Infrastucture.Persistence;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
-    public DbSet<TaskItem> Tasks { get; set; }
+    public DbSet<TaskItem> TaskItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        
+        // Configure TaskItem entity
         builder.Entity<TaskItem>(entity =>
         {
             entity.HasKey(e => e.Id);

@@ -12,7 +12,7 @@ using TaskList.Infrastucture.Persistence;
 namespace TaskList.Infrastucture.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260127070327_InitialCreate")]
+    [Migration("20260127144000_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -207,10 +207,10 @@ namespace TaskList.Infrastucture.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("TaskItems", (string)null);
                 });
 
-            modelBuilder.Entity("TaskList.Infrastucture.ApplicationUser", b =>
+            modelBuilder.Entity("TaskList.Infrastucture.Indentity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -256,6 +256,12 @@ namespace TaskList.Infrastucture.Persistence.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiry")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -290,7 +296,7 @@ namespace TaskList.Infrastucture.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("TaskList.Infrastucture.ApplicationUser", null)
+                    b.HasOne("TaskList.Infrastucture.Indentity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -299,7 +305,7 @@ namespace TaskList.Infrastucture.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("TaskList.Infrastucture.ApplicationUser", null)
+                    b.HasOne("TaskList.Infrastucture.Indentity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -314,7 +320,7 @@ namespace TaskList.Infrastucture.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TaskList.Infrastucture.ApplicationUser", null)
+                    b.HasOne("TaskList.Infrastucture.Indentity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -323,7 +329,7 @@ namespace TaskList.Infrastucture.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("TaskList.Infrastucture.ApplicationUser", null)
+                    b.HasOne("TaskList.Infrastucture.Indentity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -332,7 +338,7 @@ namespace TaskList.Infrastucture.Persistence.Migrations
 
             modelBuilder.Entity("TaskList.Domain.Entities.TaskItem", b =>
                 {
-                    b.HasOne("TaskList.Infrastucture.ApplicationUser", null)
+                    b.HasOne("TaskList.Infrastucture.Indentity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

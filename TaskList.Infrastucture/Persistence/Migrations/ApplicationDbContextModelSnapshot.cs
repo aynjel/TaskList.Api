@@ -204,7 +204,7 @@ namespace TaskList.Infrastucture.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("TaskItems", (string)null);
                 });
 
             modelBuilder.Entity("TaskList.Infrastucture.Indentity.ApplicationUser", b =>
