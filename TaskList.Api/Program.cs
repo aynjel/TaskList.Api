@@ -3,16 +3,36 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using Serilog;
 using TaskList.Api.Configuration;
 using TaskList.Application.Common;
 using TaskList.Infrastucture.Configuration;
 using TaskList.Infrastucture.Persistence;
 
-var builder = WebApplication.CreateBuilder(args);
+// Configure Serilog early (before building the app)
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Add services to the container.
+try
+{
+    Log.Information("Starting TaskList API...");
 
-builder.Services.AddControllers();
+    var builder = WebApplication.CreateBuilder(args);
+
+    // Configure Serilog from appsettings.json
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console(
+            outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    );
+
+    // Add services to the container.
+
+    builder.Services.AddControllers();
 
 // Configure API Versioning
 builder.Services.AddApiVersioning(options =>
@@ -83,6 +103,18 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// Add Serilog request logging
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+        diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+        diagnosticContext.Set("UserAgent", httpContext.Request.Headers["User-Agent"].ToString());
+    };
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -91,3 +123,13 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+
