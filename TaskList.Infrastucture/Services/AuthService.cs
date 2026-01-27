@@ -13,14 +13,12 @@ public class AuthService(
     IJwtTokenService jwtTokenService,
     IOptions<JwtSettings> jwtSettings) : IAuthService
 {
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
-    private readonly IJwtTokenService _jwtTokenService = jwtTokenService;
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
     {
         // Check if user already exists
-        var existingUser = await _userManager.FindByEmailAsync(request.Email);
+        var existingUser = await userManager.FindByEmailAsync(request.Email);
         if (existingUser != null)
         {
             throw new InvalidOperationException("User with this email already exists.");
@@ -32,10 +30,9 @@ public class AuthService(
             Name = request.Name,
             Email = request.Email,
             UserName = request.Email,
-            EmailConfirmed = true
         };
 
-        var result = await _userManager.CreateAsync(user, request.Password);
+        var result = await userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
         {
@@ -44,55 +41,57 @@ public class AuthService(
         }
 
         // Generate tokens
-        var accessToken = _jwtTokenService.GenerateAccessToken(user.Id, user.Name, user.Email!);
-        var refreshToken = _jwtTokenService.GenerateRefreshToken();
+        var accessToken = jwtTokenService.GenerateAccessToken(user.Id, user.Name, user.Email!);
+        var refreshToken = jwtTokenService.GenerateRefreshToken();
 
         // Store refresh token
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
-        await _userManager.UpdateAsync(user);
+        await userManager.UpdateAsync(user);
 
         return new AuthResponse
         {
             Name = user.Name,
             Email = user.Email!,
-            Token = accessToken
+            Token = accessToken,
+            RefreshToken = refreshToken
         };
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request)
     {
         // Find user by email
-        var user = await _userManager.FindByEmailAsync(request.Email) ?? throw new InvalidOperationException("Invalid email or password.");
+        var user = await userManager.FindByEmailAsync(request.Email) ?? throw new InvalidOperationException("Invalid email or password.");
 
         // Check password
-        var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
+        var isPasswordValid = await userManager.CheckPasswordAsync(user, request.Password);
         if (!isPasswordValid)
         {
             throw new InvalidOperationException("Invalid email or password.");
         }
 
         // Generate tokens
-        var accessToken = _jwtTokenService.GenerateAccessToken(user.Id, user.Name, user.Email!);
-        var refreshToken = _jwtTokenService.GenerateRefreshToken();
+        var accessToken = jwtTokenService.GenerateAccessToken(user.Id, user.Name, user.Email!);
+        var refreshToken = jwtTokenService.GenerateRefreshToken();
 
         // Store refresh token
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
-        await _userManager.UpdateAsync(user);
+        await userManager.UpdateAsync(user);
 
         return new AuthResponse
         {
             Name = user.Name,
             Email = user.Email!,
-            Token = accessToken
+            Token = accessToken,
+            RefreshToken = refreshToken
         };
     }
 
     public async Task<AuthResponse> RefreshTokenAsync(string refreshToken)
     {
         // Find user by refresh token
-        var user = await _userManager.Users
+        var user = await userManager.Users
             .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken) ?? throw new InvalidOperationException("Invalid refresh token.");
 
         // Check if refresh token is expired
@@ -102,26 +101,27 @@ public class AuthService(
         }
 
         // Generate new tokens
-        var newAccessToken = _jwtTokenService.GenerateAccessToken(user.Id, user.Name, user.Email!);
-        var newRefreshToken = _jwtTokenService.GenerateRefreshToken();
+        var newAccessToken = jwtTokenService.GenerateAccessToken(user.Id, user.Name, user.Email!);
+        var newRefreshToken = jwtTokenService.GenerateRefreshToken();
 
         // Update refresh token
         user.RefreshToken = newRefreshToken;
         user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
-        await _userManager.UpdateAsync(user);
+        await userManager.UpdateAsync(user);
 
         return new AuthResponse
         {
             Name = user.Name,
             Email = user.Email!,
-            Token = newAccessToken
+            Token = newAccessToken,
+            RefreshToken = newRefreshToken
         };
     }
 
     public async Task<bool> RevokeTokenAsync(string refreshToken)
     {
         // Find user by refresh token
-        var user = await _userManager.Users
+        var user = await userManager.Users
             .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
 
         if (user is null)
@@ -132,7 +132,7 @@ public class AuthService(
         // Clear refresh token
         user.RefreshToken = null;
         user.RefreshTokenExpiry = null;
-        var result = await _userManager.UpdateAsync(user);
+        var result = await userManager.UpdateAsync(user);
 
         if (result.Succeeded)
         {
@@ -142,6 +142,24 @@ public class AuthService(
         var errors = string.Join(", ", result.Errors.Select(e => e.Description));
         throw new InvalidOperationException($"Failed to revoke token: {errors}");
     }
+
+    public async Task<CurrentUserResponse?> GetCurrentUserAsync(string userId)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+
+        if (user is null)
+        {
+            return null;
+        }
+
+        return new CurrentUserResponse
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email!,
+        };
+    }
 }
+
 
 

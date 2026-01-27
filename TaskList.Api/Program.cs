@@ -2,9 +2,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
-using TaskList.Api;
+using TaskList.Api.Configuration;
 using TaskList.Application.Common;
-using TaskList.Infrastucture;
+using TaskList.Infrastucture.Configuration;
 using TaskList.Infrastucture.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,17 +35,6 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
         ClockSkew = TimeSpan.Zero
-    };
-    
-    // Read access token from Authorization header (standard JWT Bearer)
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            // JWT access token should come from Authorization header
-            // Refresh token comes from cookie (handled separately in refresh endpoint)
-            return Task.CompletedTask;
-        }
     };
 });
 

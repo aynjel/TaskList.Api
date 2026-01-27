@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace TaskList.Application;
+namespace TaskList.Application.Configuration;
 
 public static class DependencyInjection
 {

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TaskList.Api.Extensions;
 using TaskList.Application.Common;
 using TaskList.Application.DTOs.Auth;
 using TaskList.Application.Interfaces;
@@ -25,7 +26,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
             var response = await authService.RegisterAsync(request);
             
             // Set refresh token in HTTP-only cookie
-            SetRefreshTokenCookie(response.Token);
+            SetRefreshTokenCookie(response.RefreshToken);
             
             return Ok(response);
         }
@@ -56,7 +57,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
             var response = await authService.LoginAsync(request);
             
             // Set refresh token in HTTP-only cookie
-            SetRefreshTokenCookie(response.Token);
+            SetRefreshTokenCookie(response.RefreshToken);
             
             return Ok(response);
         }
@@ -93,7 +94,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
             var response = await authService.RefreshTokenAsync(refreshToken);
             
             // Set new refresh token in cookie
-            SetRefreshTokenCookie(response.Token);
+            SetRefreshTokenCookie(response.RefreshToken);
             
             return Ok(response);
         }
@@ -137,6 +138,44 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
         {
             logger.LogError(ex, "An error occurred during logout");
             return BadRequest(new { message = "An error occurred during logout." });
+        }
+    }
+
+    /// <summary>
+    /// Get current authenticated user's information
+    /// </summary>
+    /// <returns>Current user details</returns>
+    [HttpGet("me")]
+    [Authorize]
+    [ProducesResponseType(typeof(CurrentUserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CurrentUserResponse>> GetCurrentUser()
+    {
+        try
+        {
+            // Get user ID from JWT claims
+            var userId = User.GetUserId();            
+            if (string.IsNullOrEmpty(userId))
+            {
+                logger.LogWarning("User ID not found in claims");
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var currentUser = await authService.GetCurrentUserAsync(userId);
+            
+            if (currentUser is null)
+            {
+                logger.LogWarning("User not found with ID: {UserId}", userId);
+                return NotFound(new { message = "User not found." });
+            }
+
+            return Ok(currentUser);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while retrieving current user");
+            return BadRequest(new { message = "An error occurred while retrieving user information." });
         }
     }
 

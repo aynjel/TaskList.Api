@@ -8,7 +8,7 @@ using TaskList.Infrastucture.Indentity;
 using TaskList.Infrastucture.Persistence;
 using TaskList.Infrastucture.Services;
 
-namespace TaskList.Infrastucture;
+namespace TaskList.Infrastucture.Configuration;
 
 public static class DependencyInjection
 {

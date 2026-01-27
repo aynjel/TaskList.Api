@@ -1,6 +1,6 @@
-﻿using TaskList.Application;
+﻿using TaskList.Application.Configuration;
 
-namespace TaskList.Api;
+namespace TaskList.Api.Configuration;
 
 public static class DependencyInjection
 {

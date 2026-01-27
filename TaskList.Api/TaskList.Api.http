@@ -63,10 +63,63 @@ Content-Type: application/json
   "password": "Password123"
 }
 
+###############################################
+# Login
+###############################################
+
+### Login with Valid Credentials
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "Password123"
+}
+
+### Login with Invalid Credentials
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "WrongPassword"
+}
+
+###############################################
+# Token Refresh
+###############################################
+
+### Refresh Access Token
+POST {{baseUrl}}/api/auth/refresh
+
+###############################################
+# Logout
+###############################################
+
+### Logout
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{token}}
+
+###############################################
+# Current User
+###############################################
+
+### Get Current User Profile
+# Replace @token with your access token from login/register response
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+###############################################
+# API Documentation
+###############################################
+
+### Get Scalar API Documentation
+GET {{baseUrl}}/scalar/v1
+
 GET {{httpUrl}}/
 Accept: application/json
 
-### 9. Get OpenAPI Specification
+### Get OpenAPI Specification
 GET {{baseUrl}}/openapi/v1.json
 Accept: application/json
 
@@ -74,7 +127,7 @@ Accept: application/json
 # Protected Endpoints (Add JWT token to test)
 ###############################################
 
-### 10. Example Protected Request
+### Example Protected Request
 # Replace @token with actual JWT token from registration/login response
 GET {{baseUrl}}/api/tasks
 Authorization: Bearer {{token}}
