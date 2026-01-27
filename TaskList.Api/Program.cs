@@ -86,6 +86,18 @@ try
 
     builder.Services.AddAuthorization();
 
+    // Configure CORS to expose pagination header
+    builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .WithExposedHeaders("X-Pagination");
+        });
+    });
+
     builder.Services.AddApiDI();
     builder.Services.AddInfrastructureDI(builder.Configuration);
 
@@ -123,6 +135,8 @@ try
     });
 
     app.UseHttpsRedirection();
+
+    app.UseCors();
 
     app.UseAuthentication();
     app.UseAuthorization();

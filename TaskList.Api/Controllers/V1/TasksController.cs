@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,24 +21,51 @@ public class TasksController(
     /// Get paginated and filtered list of tasks
     /// </summary>
     /// <param name="parameters">Query parameters for filtering, sorting, and pagination</param>
-    /// <returns>Paginated list of tasks</returns>
+    /// <returns>List of tasks with pagination metadata in response headers</returns>
+    /// <remarks>
+    /// Pagination metadata is returned in the X-Pagination response header as a JSON object with the following properties:
+    /// - currentPage: Current page number
+    /// - pageSize: Number of items per page
+    /// - totalCount: Total number of items
+    /// - totalPages: Total number of pages
+    /// - hasPrevious: Indicates if there is a previous page
+    /// - hasNext: Indicates if there is a next page
+    /// 
+    /// Example: X-Pagination: {"currentPage":1,"pageSize":10,"totalCount":45,"totalPages":5,"hasPrevious":false,"hasNext":true}
+    /// </remarks>
     [HttpGet]
-    [ProducesResponseType(typeof(PagedResult<TaskResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<TaskResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<PagedResult<TaskResponse>>> GetTasks([FromQuery] TaskQueryParameters parameters)
+    public async Task<ActionResult<List<TaskResponse>>> GetTasks([FromQuery] TaskQueryParameters parameters)
     {
         try
         {
             var userId = CurrentUserId;
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized<PagedResult<TaskResponse>>("Authentication required.");
+                return Unauthorized<List<TaskResponse>>("Authentication required.");
 
             var result = await taskService.GetTasksAsync(userId, parameters);
-            return Ok(result);
+            
+            // Create pagination metadata object
+            var paginationMetadata = new
+            {
+                currentPage = result.PageNumber,
+                pageSize = result.PageSize,
+                totalCount = result.TotalCount,
+                totalPages = result.TotalPages,
+                hasPrevious = result.HasPreviousPage,
+                hasNext = result.HasNextPage
+            };
+            
+            // Serialize to JSON and add to response header
+            Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+            
+            // Return only the data items in the response body
+            return Ok(result.Items);
         }
         catch (Exception ex)
         {
-            return HandleException<PagedResult<TaskResponse>>(ex, "Failed to retrieve tasks.");
+            return HandleException<List<TaskResponse>>(ex, "Failed to retrieve tasks.");
         }
     }
 

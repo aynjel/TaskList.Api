@@ -146,6 +146,16 @@ Content-Type: application/json
 ###############################################
 # 2. READ TASKS
 ###############################################
+# NOTE: Pagination metadata is returned in the X-Pagination response header as a JSON object:
+# {
+#   "currentPage": 1,
+#   "pageSize": 10,
+#   "totalCount": 45,
+#   "totalPages": 5,
+#   "hasPrevious": false,
+#   "hasNext": true
+# }
+# Response body contains only the array of tasks
 
 ### Get All Tasks (Paginated)
 GET {{baseUrl}}/api/v1/tasks
