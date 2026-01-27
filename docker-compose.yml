@@ -1,0 +1,21 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: taskAiListApp-db
+    ports:
+      - '1433:1433'
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=@Password123!
+      - MSSQL_PID=Developer
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - taskAiListApp-network
+
+networks:
+  taskAiListApp-network:
+    driver: bridge
+
+volumes:
+  sql_data:

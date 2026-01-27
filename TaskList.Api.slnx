@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TaskList.Api/TaskList.Api.csproj" />
+  <Project Path="TaskList.Application/TaskList.Application.csproj" />
+  <Project Path="TaskList.Domain/TaskList.Domain.csproj" />
+  <Project Path="TaskList.Infrastucture/TaskList.Infrastucture.csproj" />
+</Solution>
