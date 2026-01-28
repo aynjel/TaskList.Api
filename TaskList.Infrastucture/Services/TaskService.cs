@@ -168,6 +168,90 @@ public class TaskService(ITaskRepository _taskRepository, ILogger<TaskService> _
         return MapToTaskResponse(task);
     }
 
+    public async Task<CreateFromExtractionResponse> CreateTasksFromExtractionAsync(
+        string userId, 
+        CreateFromExtractionRequest request)
+    {
+        _logger.LogInformation("Creating {Count} tasks from extraction for user {UserId}", 
+            request.Tasks.Count, userId);
+
+        var startTime = DateTime.UtcNow;
+        var createdTasks = new List<TaskResponse>();
+        var errors = new List<TaskCreationError>();
+
+        for (int i = 0; i < request.Tasks.Count; i++)
+        {
+            var extractedTask = request.Tasks[i];
+            
+            try
+            {
+                // Validate required fields
+                if (string.IsNullOrWhiteSpace(extractedTask.Title))
+                {
+                    errors.Add(new TaskCreationError
+                    {
+                        Index = i,
+                        TaskTitle = extractedTask.Title,
+                        ErrorMessage = "Task title is required"
+                    });
+                    continue;
+                }
+
+                // Create the task
+                var task = new TaskItem
+                {
+                    Title = extractedTask.Title,
+                    Description = extractedTask.Description ?? string.Empty,
+                    DueDate = extractedTask.DueDate,
+                    Priority = (PriorityLevel)extractedTask.Priority,
+                    Category = (CategoryType)extractedTask.Category,
+                    Status = TaskItemStatus.Todo,
+                    UserId = userId,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                await _taskRepository.AddAsync(task);
+                await _taskRepository.SaveChangesAsync();
+
+                createdTasks.Add(MapToTaskResponse(task));
+                
+                _logger.LogInformation("Task created from extraction: {TaskId} - {Title}", 
+                    task.Id, task.Title);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating task from extraction at index {Index}: {Title}", 
+                    i, extractedTask.Title);
+                
+                errors.Add(new TaskCreationError
+                {
+                    Index = i,
+                    TaskTitle = extractedTask.Title,
+                    ErrorMessage = ex.Message
+                });
+            }
+        }
+
+        var processingTime = (long)(DateTime.UtcNow - startTime).TotalMilliseconds;
+
+        _logger.LogInformation(
+            "Batch creation completed: {Created} created, {Failed} failed out of {Total} tasks", 
+            createdTasks.Count, errors.Count, request.Tasks.Count);
+
+        return new CreateFromExtractionResponse
+        {
+            CreatedTasks = createdTasks,
+            Errors = errors,
+            Summary = new BatchCreationSummary
+            {
+                TotalSubmitted = request.Tasks.Count,
+                TotalCreated = createdTasks.Count,
+                TotalFailed = errors.Count,
+                ProcessingTimeMs = processingTime
+            }
+        };
+    }
+
     private static TaskResponse MapToTaskResponse(TaskItem task)
     {
         return new TaskResponse

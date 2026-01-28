@@ -217,4 +217,53 @@ public class TasksController(
             return HandleException(ex, "Failed to delete task.");
         }
     }
+
+    /// <summary>
+    /// Create multiple tasks from document extraction results
+    /// </summary>
+    /// <param name="request">Selected tasks from extraction to create</param>
+    /// <returns>Created tasks and summary</returns>
+    /// <remarks>
+    /// This endpoint allows users to create tasks in batch after reviewing extracted tasks from a document.
+    /// Users can select which tasks to create and edit them before submission.
+    /// 
+    /// Example request:
+    /// {
+    ///   "tasks": [
+    ///     {
+    ///       "title": "Complete API documentation",
+    ///       "description": "Write comprehensive API docs",
+    ///       "dueDate": "2026-02-15",
+    ///       "priority": 3,
+    ///       "category": 1
+    ///     }
+    ///   ]
+    /// }
+    /// </remarks>
+    [HttpPost("create-from-extraction")]
+    [ProducesResponseType(typeof(CreateFromExtractionResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<CreateFromExtractionResponse>> CreateTasksFromExtraction(
+        [FromBody] CreateFromExtractionRequest request)
+    {
+        try
+        {
+            var userId = CurrentUserId;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized<CreateFromExtractionResponse>("Authentication required.");
+
+            if (request.Tasks == null || request.Tasks.Count == 0)
+                return BadRequest(new { message = "No tasks provided for creation." });
+
+            var result = await taskService.CreateTasksFromExtractionAsync(userId, request);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return HandleException<CreateFromExtractionResponse>(ex, "Failed to create tasks from extraction.");
+        }
+    }
 }
+

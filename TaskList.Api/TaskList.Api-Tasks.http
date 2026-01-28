@@ -218,6 +218,118 @@ GET {{baseUrl}}/api/v1/tasks/99999
 Authorization: Bearer {{accessToken}}
 
 ###############################################
+# 2.5 CREATE TASKS FROM DOCUMENT EXTRACTION
+###############################################
+
+### Create Tasks from Extracted Data
+# First, extract tasks from a document using the AI endpoint:
+# POST {{baseUrl}}/api/v1/ai/extract-from-document
+# Then use this endpoint to create selected tasks
+
+POST {{baseUrl}}/api/v1/tasks/create-from-extraction
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "tasks": [
+    {
+      "title": "Complete API documentation",
+      "description": "Write comprehensive API documentation including all endpoints, authentication, and error handling",
+      "dueDate": "2026-02-15T17:00:00Z",
+      "priority": 3,
+      "category": 1
+    },
+    {
+      "title": "Submit quarterly financial report",
+      "description": "Q4 2025 financial summary must be reviewed by finance team",
+      "dueDate": "2026-02-10T17:00:00Z",
+      "priority": 3,
+      "category": 1
+    },
+    {
+      "title": "Fix critical login bug",
+      "description": "Users unable to login with social accounts. Production issue.",
+      "dueDate": "2026-02-01T17:00:00Z",
+      "priority": 3,
+      "category": 1
+    }
+  ]
+}
+
+### Create Tasks - Single Task Example
+POST {{baseUrl}}/api/v1/tasks/create-from-extraction
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "tasks": [
+    {
+      "title": "Buy groceries",
+      "description": "Milk, eggs, bread, fruits",
+      "dueDate": "2026-01-29T10:00:00Z",
+      "priority": 2,
+      "category": 2
+    }
+  ]
+}
+
+### Create Tasks - Mixed Categories
+POST {{baseUrl}}/api/v1/tasks/create-from-extraction
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "tasks": [
+    {
+      "title": "Review pull requests",
+      "description": "Review team's code submissions",
+      "dueDate": "2026-01-30T17:00:00Z",
+      "priority": 2,
+      "category": 1
+    },
+    {
+      "title": "Schedule dentist appointment",
+      "description": "Annual checkup",
+      "dueDate": "2026-02-05T14:00:00Z",
+      "priority": 1,
+      "category": 2
+    },
+    {
+      "title": "Order new laptop",
+      "description": "MacBook Pro for development",
+      "dueDate": "2026-02-08T17:00:00Z",
+      "priority": 2,
+      "category": 3
+    }
+  ]
+}
+
+### Create Tasks - Error Scenario (Empty Title)
+POST {{baseUrl}}/api/v1/tasks/create-from-extraction
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "tasks": [
+    {
+      "title": "",
+      "description": "This should fail validation",
+      "priority": 2,
+      "category": 1
+    }
+  ]
+}
+
+### Create Tasks - No Tasks Provided
+POST {{baseUrl}}/api/v1/tasks/create-from-extraction
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "tasks": []
+}
+
+###############################################
 # 3. UPDATE TASKS
 ###############################################
 

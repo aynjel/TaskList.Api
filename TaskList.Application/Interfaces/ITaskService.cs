@@ -10,4 +10,10 @@ public interface ITaskService
     Task<TaskResponse?> UpdateTaskAsync(int id, string userId, UpdateTaskRequest request);
     Task<bool> DeleteTaskAsync(int id, string userId);
     Task<TaskResponse?> UpdateTaskStatusAsync(int id, string userId, Domain.Enums.TaskItemStatus status);
+    
+    /// <summary>
+    /// Create multiple tasks from extracted document data
+    /// </summary>
+    Task<CreateFromExtractionResponse> CreateTasksFromExtractionAsync(string userId, CreateFromExtractionRequest request);
 }
+
