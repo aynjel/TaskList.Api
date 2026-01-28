@@ -22,6 +22,9 @@ public static class DependencyInjection
 
         // Configure JWT Settings
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+        
+        // Configure AI Settings
+        services.Configure<AiSettings>(configuration.GetSection("AiSettings"));
 
         // Configure Identity
         services.AddIdentityCore<ApplicationUser>(options =>
@@ -42,6 +45,10 @@ public static class DependencyInjection
         // Register services
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        
+        // Register AI services
+        services.AddScoped<IAiService, AiSummaryService>();
+        services.AddScoped<IDocumentParserService, DocumentParserService>();
         
         // Register repositories
         services.AddScoped<ITaskRepository, TaskRepository>();

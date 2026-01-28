@@ -51,6 +51,14 @@ public class TaskRepository(ApplicationDbContext _context) : ITaskRepository
             .AnyAsync(t => t.Id == id && t.UserId == userId);
     }
 
+    public async Task<List<TaskItem>> GetAllByUserIdAsync(string userId)
+    {
+        return await _context.TaskItems
+            .Where(t => t.UserId == userId)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
     public async Task<TaskItem> AddAsync(TaskItem task)
     {
         await _context.TaskItems.AddAsync(task);

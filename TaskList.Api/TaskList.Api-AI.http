@@ -1,0 +1,147 @@
+### TaskList API - AI Features Testing
+### Prerequisites: Login first and copy the access token
+
+# Base URL
+@baseUrl = https://localhost:7191
+@httpUrl = http://localhost:5045
+
+# Store your access token here after login
+@accessToken = 
+
+###############################################
+# 1. AI TASK SUMMARY
+###############################################
+
+### Get AI-Powered Task Summary
+# Returns a conversational summary of your tasks with metrics
+GET {{baseUrl}}/api/v1/ai/summary
+Authorization: Bearer {{accessToken}}
+
+###############################################
+# 2. DOCUMENT EXTRACTION
+###############################################
+
+### Extract Tasks from PDF Document
+POST {{baseUrl}}/api/v1/ai/extract-from-document
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="document.pdf"
+Content-Type: application/pdf
+
+< ./sample-documents/document.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Extract Tasks from Word Document
+POST {{baseUrl}}/api/v1/ai/extract-from-document
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="document.docx"
+Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+
+< ./sample-documents/document.docx
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Extract Tasks from Text File
+POST {{baseUrl}}/api/v1/ai/extract-from-document
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="notes.txt"
+Content-Type: text/plain
+
+< ./sample-documents/notes.txt
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###############################################
+# 3. ERROR SCENARIOS
+###############################################
+
+### Attempt without authentication
+GET {{baseUrl}}/api/v1/ai/summary
+
+### Upload unsupported file type
+POST {{baseUrl}}/api/v1/ai/extract-from-document
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="image.jpg"
+Content-Type: image/jpeg
+
+< ./sample-documents/image.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Upload without file
+POST {{baseUrl}}/api/v1/ai/extract-from-document
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data
+
+###############################################
+# 4. HEALTH CHECK
+###############################################
+
+### Check AI Service Health
+GET {{baseUrl}}/api/v1/ai/health
+
+###############################################
+# NOTES
+###############################################
+
+# Expected Response Format for Task Summary:
+# {
+#   "summary": "Good morning! You have 15 tasks total...",
+#   "metrics": {
+#     "totalTasks": 15,
+#     "dueToday": 2,
+#     "dueThisWeek": 5,
+#     "overdue": 1,
+#     "byStatus": { "todo": 8, "inProgress": 5, "completed": 2 },
+#     "byPriority": { "high": 3, "medium": 7, "low": 5 },
+#     "byCategory": { "work": 10, "personal": 3, "shopping": 2 }
+#   },
+#   "tasksToday": [...],
+#   "upcomingTasks": [...],
+#   "generatedAt": "2026-01-28T10:30:00Z"
+# }
+
+# Expected Response Format for Document Extraction:
+# {
+#   "extractedTasks": [
+#     {
+#       "title": "Submit quarterly report",
+#       "description": "AI-extracted description",
+#       "dueDate": "2026-02-15",
+#       "priority": 3,
+#       "suggestedCategory": 1,
+#       "confidence": 0.95,
+#       "sourceText": "The quarterly report is due by February 15th..."
+#     }
+#   ],
+#   "extractedContacts": [
+#     { "name": "John Doe", "email": "john@example.com", "role": "Manager" }
+#   ],
+#   "documentSummary": "This document outlines project deliverables...",
+#   "aiInsights": "I found 5 action items with specific due dates. The most urgent is...",
+#   "metadata": {
+#     "totalTasksFound": 5,
+#     "totalContactsFound": 3,
+#     "tasksWithDueDates": 4,
+#     "highPriorityTasks": 2,
+#     "mediumPriorityTasks": 2,
+#     "lowPriorityTasks": 1,
+#     "urgentTasks": 1,
+#     "averageConfidence": 0.89,
+#     "documentType": "Meeting Notes",
+#     "processingTimeMs": 2340,
+#     "tasksByCategory": {
+#       "Work": 4,
+#       "Personal": 1
+#     }
+#   },
+#   "processedAt": "2026-01-28T10:30:00Z"
+# }

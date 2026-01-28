@@ -13,6 +13,7 @@ public interface ITaskRepository
     // Query Operations
     Task<TaskItem?> GetByIdAsync(int id, string userId);
     Task<(List<TaskItem> Items, int TotalCount)> GetPagedAsync(string userId, TaskQueryParameters parameters);
+    Task<List<TaskItem>> GetAllByUserIdAsync(string userId);
     Task<bool> ExistsAsync(int id, string userId);
 
     // Command Operations
