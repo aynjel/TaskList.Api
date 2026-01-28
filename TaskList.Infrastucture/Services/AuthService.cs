@@ -54,7 +54,8 @@ public class AuthService(
             Name = user.Name,
             Email = user.Email!,
             Token = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken,
+            ExpiresIn = _jwtSettings.ExpirationInMinutes * 60
         };
     }
 
@@ -84,7 +85,8 @@ public class AuthService(
             Name = user.Name,
             Email = user.Email!,
             Token = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken,
+            ExpiresIn = _jwtSettings.ExpirationInMinutes * 60
         };
     }
 
@@ -114,7 +116,8 @@ public class AuthService(
             Name = user.Name,
             Email = user.Email!,
             Token = newAccessToken,
-            RefreshToken = newRefreshToken
+            RefreshToken = newRefreshToken,
+            ExpiresIn = _jwtSettings.ExpirationInMinutes * 60
         };
     }
 

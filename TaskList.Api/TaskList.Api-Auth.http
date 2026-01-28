@@ -5,13 +5,16 @@
 ### - URL Versioning: api/v1/auth/register
 ### - Header Versioning: X-Api-Version: 1.0
 ### - Query String: api/auth/register?api-version=1.0
+###
+### ?? SECURITY NOTE: Refresh tokens are now stored in HTTP-only cookies (not in response body)
+### This protects against XSS attacks. Make sure to check browser cookies to see the refreshToken.
 
 # Set the base URL for your API
 @baseUrl = https://localhost:7191
 @httpUrl = http://localhost:5045
 
-# Variables to store tokens and IDs (will be set after successful requests)
-@token = 
+# Variables to store tokens (Access token from response, Refresh token in cookie)
+@accessToken = 
 @userId = 
 
 ###############################################
@@ -19,6 +22,14 @@
 ###############################################
 
 ### Register New User (URL Versioning)
+# Expected Response:
+# {
+#   "name": "John Doe",
+#   "email": "john.doe@example.com",
+#   "token": "eyJhbGc...", // Access token (JWT)
+#   "expiresIn": 1800       // 30 minutes in seconds
+# }
+# Note: Refresh token is set in HTTP-only cookie (not in response)
 POST {{baseUrl}}/api/v1/auth/register
 Content-Type: application/json
 
@@ -73,6 +84,14 @@ Content-Type: application/json
 ###############################################
 
 ### Login with Valid Credentials
+# Expected Response:
+# {
+#   "name": "John Doe",
+#   "email": "john.doe@example.com",
+#   "token": "eyJhbGc...", // Access token (JWT)
+#   "expiresIn": 1800       // 30 minutes
+# }
+# Note: Refresh token is automatically set in HTTP-only cookie
 POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
@@ -95,6 +114,15 @@ Content-Type: application/json
 ###############################################
 
 ### Refresh Access Token
+# ? Refresh token is automatically sent from HTTP-only cookie
+# ?? This requires the cookie to be present (login first)
+# Expected Response:
+# {
+#   "name": "John Doe",
+#   "email": "john.doe@example.com",
+#   "token": "eyJhbGc...", // New access token
+#   "expiresIn": 1800
+# }
 POST {{baseUrl}}/api/auth/refresh
 
 ###############################################
@@ -102,17 +130,18 @@ POST {{baseUrl}}/api/auth/refresh
 ###############################################
 
 ### Logout
+# Revokes refresh token and clears cookie
 POST {{baseUrl}}/api/auth/logout
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}
 
 ###############################################
 # Current User
 ###############################################
 
 ### Get Current User Profile
-# Replace @token with your access token from login/register response
+# Replace @accessToken with your access token from login/register response
 GET {{baseUrl}}/api/auth/me
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}
 
 ###############################################
 # API Documentation

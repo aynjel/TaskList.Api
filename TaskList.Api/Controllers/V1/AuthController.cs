@@ -23,9 +23,9 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     {
         try
         {
-            var response = await authService.RegisterAsync(request);
-            SetRefreshTokenCookie(response.RefreshToken);
-            return Ok(response);
+            var result = await authService.RegisterAsync(request);
+            SetRefreshTokenCookie(result.RefreshToken);
+            return Ok(result);
         }
         catch (InvalidOperationException ex)
         {
@@ -49,9 +49,9 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     {
         try
         {
-            var response = await authService.LoginAsync(request);
-            SetRefreshTokenCookie(response.RefreshToken);
-            return Ok(response);
+            var result = await authService.LoginAsync(request);
+            SetRefreshTokenCookie(result.RefreshToken);
+            return Ok(result);
         }
         catch (InvalidOperationException ex)
         {
@@ -64,7 +64,7 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
     }
 
     /// <summary>
-    /// Refresh access token using refresh token from cookie
+    /// Refresh access token using refresh token from HTTP-only cookie
     /// </summary>
     /// <returns>New JWT access token</returns>
     [HttpPost("refresh")]
@@ -78,13 +78,13 @@ public class AuthController(IAuthService authService, ILogger<AuthController> lo
             
             if (string.IsNullOrEmpty(refreshToken))
             {
-                return Unauthorized<AuthResponse>("Refresh token is required.");
+                return Unauthorized<AuthResponse>("Refresh token is required. Please login again.");
             }
 
-            var response = await authService.RefreshTokenAsync(refreshToken);
-            SetRefreshTokenCookie(response.RefreshToken);
+            var result = await authService.RefreshTokenAsync(refreshToken);
             
-            return Ok(response);
+            SetRefreshTokenCookie(result.RefreshToken);
+            return Ok(result);
         }
         catch (InvalidOperationException ex)
         {
