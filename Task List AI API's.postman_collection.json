@@ -1,0 +1,574 @@
+{
+  "info": {
+    "_postman_id": "636127b2-708a-419e-9eb9-0ab7e1e25de0",
+    "name": "Task List AI API's",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "45713704",
+    "_collection_link": "https://go.postman.co/collection/45713704-636127b2-708a-419e-9eb9-0ab7e1e25de0?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const user = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Has properties\", function() {\r",
+                  "    pm.expect(user).to.have.property(\"token\");\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.test(\"Has properties\")) {\r",
+                  "    pm.globals.set(\"accessToken\", user.token);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Hulk Banner\",\r\n  \"email\": \"hulk.banner@example.com\",\r\n  \"password\": \"Password123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const user = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Has properties\", function() {\r",
+                  "    pm.expect(user).to.have.property(\"token\");\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.test(\"Has properties\")) {\r",
+                  "    pm.globals.set(\"accessToken\", user.token);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"steve.rogers@example.com\",\r\n  \"password\": \"Password123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Task",
+      "item": [
+        {
+          "name": "Get Tasks",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Task",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tasks/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Task",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Complete project documentation\",\r\n  \"description\": \"Write comprehensive documentation for the TaskList API including all CRUD operations\",\r\n  \"dueDate\": \"2026-02-15T17:00:00Z\",\r\n  \"priority\": 2,\r\n  \"category\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create from Extraction",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"tasks\": [\r\n        {\r\n            \"title\": \"Complete API documentation\",\r\n            \"description\": \"Need to document all REST endpoints, authentication, and error handling\",\r\n            \"dueDate\": \"2026-02-15T00:00:00\",\r\n            \"priority\": 3,\r\n            \"suggestedCategory\": 1,\r\n            \"confidence\": 0.9,\r\n            \"sourceText\": \"Complete API documentation - Assigned to Sarah Johnson Due: February 15, 2026 Status: In Progress Priority: HIGH Details: Need to document all REST endpoints, authentication, and error handling\"\r\n        },\r\n        {\r\n            \"title\": \"Submit quarterly financial report\",\r\n            \"description\": \"Q4 2025 financial summary must be reviewed by finance team\",\r\n            \"dueDate\": \"2026-02-10T00:00:00\",\r\n            \"priority\": 3,\r\n            \"suggestedCategory\": 1,\r\n            \"confidence\": 0.95,\r\n            \"sourceText\": \"Submit quarterly financial report - Assigned to John Doe Due: February 10, 2026 Priority: URGENT Details: Q4 2025 financial summary must be reviewed by finance team\"\r\n        },\r\n        {\r\n            \"title\": \"Fix critical login bug\",\r\n            \"description\": \"Users unable to login with social accounts. Production issue.\",\r\n            \"dueDate\": \"2026-02-01T00:00:00\",\r\n            \"priority\": 3,\r\n            \"suggestedCategory\": 1,\r\n            \"confidence\": 0.9,\r\n            \"sourceText\": \"Fix critical login bug - Assigned to Mike Chen Due: February 1, 2026 Priority: HIGH Details: Users unable to login with social accounts. Production issue.\"\r\n        },\r\n        {\r\n            \"title\": \"Design new dashboard mockups\",\r\n            \"description\": \"Create wireframes and high-fidelity mockups for the new analytics dashboard\",\r\n            \"dueDate\": \"2026-02-20T00:00:00\",\r\n            \"priority\": 2,\r\n            \"suggestedCategory\": 1,\r\n            \"confidence\": 0.85,\r\n            \"sourceText\": \"Design new dashboard mockups - Assigned to Emily Rodriguez Due: February 20, 2026 Priority: MEDIUM Details: Create wireframes and high-fidelity mockups for the new analytics dashboard\"\r\n        },\r\n        {\r\n            \"title\": \"Schedule team building event\",\r\n            \"description\": \"Plan quarterly team outing and activities\",\r\n            \"dueDate\": \"2026-03-05T00:00:00\",\r\n            \"priority\": 1,\r\n            \"suggestedCategory\": 1,\r\n            \"confidence\": 0.7,\r\n            \"sourceText\": \"Schedule team building event Due: March 5, 2026 Priority: LOW Details: Plan quarterly team outing and activities\"\r\n        },\r\n        {\r\n            \"title\": \"Review and approve pull requests\",\r\n            \"description\": \"\",\r\n            \"dueDate\": \"2026-01-31T00:00:00\",\r\n            \"priority\": 2,\r\n            \"suggestedCategory\": 1,\r\n            \"confidence\": 0.75,\r\n            \"sourceText\": \"Review and approve pull requests Due: Next week Priority: MEDIUM Assigned to: Sarah Johnson\"\r\n        },\r\n        {\r\n            \"title\": \"Update project timeline\",\r\n            \"description\": \"\",\r\n            \"dueDate\": \"2026-01-31T00:00:00\",\r\n            \"priority\": 2,\r\n            \"suggestedCategory\": 1,\r\n            \"confidence\": 0.75,\r\n            \"sourceText\": \"Update project timeline Due: End of this week Priority: MEDIUM\"\r\n        },\r\n        {\r\n            \"title\": \"Order new development laptops\",\r\n            \"description\": \"Need 3 new MacBook Pros for the dev team\",\r\n            \"dueDate\": \"2026-02-08T00:00:00\",\r\n            \"priority\": 3,\r\n            \"suggestedCategory\": 3,\r\n            \"confidence\": 0.9,\r\n            \"sourceText\": \"Order new development laptops Due: February 8, 2026 Priority: HIGH Contact: procurement@company.com Details: Need 3 new MacBook Pros for the dev team\"\r\n        },\r\n        {\r\n            \"title\": \"Purchase design software licenses\",\r\n            \"description\": \"\",\r\n            \"dueDate\": \"2026-02-05T00:00:00\",\r\n            \"priority\": 2,\r\n            \"suggestedCategory\": 3,\r\n            \"confidence\": 0.7,\r\n            \"sourceText\": \"Purchase design software licenses Due: February 5, 2026 Priority: MEDIUM\"\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/create-from-extraction",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "create-from-extraction"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"title\": \"Complete project documentation (UPDATED)\",\r\n  \"description\": \"Updated description with more details\",\r\n  \"dueDate\": \"2026-02-20T17:00:00Z\",\r\n  \"priority\": 1,\r\n  \"category\": 3,\r\n  \"status\": 3\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/8",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "8"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tasks/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Task Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "8",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/2/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "2",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ai",
+      "item": [
+        {
+          "name": "Summary",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/Ai/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Ai",
+                "summary"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Health",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/Ai/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Ai",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Extract from Document",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "uuid": "5e54d240-7839-463c-b837-f9f7341e2281",
+                  "src": "/C:/Users/Home/Downloads/PROJECT ALPHA.pdf"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/Ai/extract-from-document",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "Ai",
+                "extract-from-document"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    }
+  ]
+}

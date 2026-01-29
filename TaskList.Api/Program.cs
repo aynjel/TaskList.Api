@@ -91,9 +91,10 @@ try
     {
         options.AddDefaultPolicy(policy =>
         {
-            policy.AllowAnyOrigin()
+            policy.WithOrigins("https://localhost:4200", "http://localhost:4200")
                   .AllowAnyMethod()
                   .AllowAnyHeader()
+                  .AllowCredentials()
                   .WithExposedHeaders("X-Pagination");
         });
     });
