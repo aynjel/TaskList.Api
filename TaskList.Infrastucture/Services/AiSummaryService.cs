@@ -99,8 +99,8 @@ public class AiSummaryService : IAiService
             {
                 Summary = aiSummary,
                 Metrics = metrics,
-                TasksToday = tasksToday.Select(MapToTaskResponse).ToList(),
-                UpcomingTasks = upcomingTasks.Select(MapToTaskResponse).ToList()
+                TasksToday = [.. tasksToday.Select(MapToTaskResponse)],
+                UpcomingTasks = [.. upcomingTasks.Select(MapToTaskResponse)]
             };
         }
         catch (Exception ex)
@@ -301,7 +301,7 @@ public class AiSummaryService : IAiService
         }
     }
 
-    private ExtractionMetadata CalculateExtractionMetadata(
+    private static ExtractionMetadata CalculateExtractionMetadata(
         DocumentExtractionResponse extraction, 
         DateTime startTime, 
         string fileName)

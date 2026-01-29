@@ -104,7 +104,7 @@ public class DocumentParserService(ILogger<DocumentParserService> logger) : IDoc
         return await Task.FromResult(sb.ToString());
     }
 
-    private async Task<string> ExtractFromTextFileAsync(Stream stream)
+    private static async Task<string> ExtractFromTextFileAsync(Stream stream)
     {
         using var reader = new StreamReader(stream);
         return await reader.ReadToEndAsync();
