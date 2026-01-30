@@ -43,7 +43,7 @@ public class AiController(
     /// <summary>
     /// Extract tasks from uploaded document
     /// </summary>
-    /// <param name="file">Document file (PDF, Word, or text)</param>
+    /// <param name="file">Document file (PDF, Word, Text, or Outlook MSG)</param>
     /// <returns>Extracted tasks, contacts, and insights from the document</returns>
     [HttpPost("extract-from-document")]
     [ProducesResponseType(typeof(DocumentExtractionResponse), StatusCodes.Status200OK)]
@@ -63,9 +63,20 @@ public class AiController(
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "No file uploaded." });
 
-            var supportedTypes = new[] { "application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain" };
-            if (!supportedTypes.Contains(file.ContentType.ToLowerInvariant()))
-                return BadRequest(new { message = "Unsupported file type. Supported types: PDF, DOCX, TXT" });
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            var supportedTypes = new[] 
+            { 
+                "application/pdf", 
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
+                "text/plain",
+                "application/vnd.ms-outlook",
+                "application/octet-stream" // For .msg files
+            };
+            
+            // Additional check for .msg files
+            var isMsgFile = fileExtension == ".msg";
+            if (!isMsgFile && !supportedTypes.Contains(file.ContentType.ToLowerInvariant()))
+                return BadRequest(new { message = "Unsupported file type. Supported types: PDF, DOCX, TXT, MSG" });
 
             if (file.Length > 10_000_000) // 10 MB
                 return BadRequest(new { message = "File size exceeds maximum limit of 10 MB." });

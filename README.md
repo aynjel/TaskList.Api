@@ -40,7 +40,7 @@ TaskList API is a comprehensive task management system that leverages artificial
 
 - **RESTful API Design**: Clean, consistent API following REST principles
 - **AI-Powered Insights**: Natural language task summaries powered by GPT models
-- **Document Intelligence**: Automatic task extraction from PDF, Word, and text documents
+- **Document Intelligence**: Automatic task extraction from PDF, Word, Text, and Outlook email files
 - **Clean Architecture**: Separation of concerns with Domain-Driven Design
 - **Type-Safe**: Strong typing throughout the application
 - **Secure**: JWT-based authentication with refresh tokens
@@ -59,7 +59,8 @@ TaskList API is a comprehensive task management system that leverages artificial
 
 ### AI-Powered Features
 - 🤖 **AI Task Summary**: Conversational overview of your tasks
-- 📄 **Document Extraction**: Extract tasks from PDF, DOCX, and TXT files
+- 📄 **Document Extraction**: Extract tasks from PDF, DOCX, TXT, and MSG files
+- 📧 **Email Processing**: Extract action items directly from Outlook emails
 - 🎯 **Batch Creation**: Create multiple tasks from extracted data
 - 📊 **Confidence Scoring**: AI confidence levels for each extraction
 - 🏷️ **Auto-Categorization**: Automatic task priority and category detection
@@ -99,6 +100,7 @@ TaskList API is a comprehensive task management system that leverages artificial
 - **Scalar**: Modern API documentation
 - **iText7**: PDF processing
 - **DocumentFormat.OpenXml**: Word document processing
+- **MsgReader**: Outlook MSG file processing
 
 ---
 
@@ -556,6 +558,7 @@ The application integrates with **OpenAI GPT models** using **Microsoft Semantic
 - PDF (`.pdf`)
 - Word Documents (`.docx`)
 - Text Files (`.txt`)
+- Outlook Email Messages (`.msg`)
 
 **What It Extracts:**
 - ✅ Action items and tasks
@@ -564,6 +567,8 @@ The application integrates with **OpenAI GPT models** using **Microsoft Semantic
 - ✅ People/contacts with emails
 - ✅ Document summary
 - ✅ AI insights about urgency
+- ✅ Email metadata (sender, recipients, subject, date) from .msg files
+- ✅ Email body content and attachments list from .msg files
 
 **Example Response:**
 ```json
@@ -598,6 +603,32 @@ The application integrates with **OpenAI GPT models** using **Microsoft Semantic
   }
 }
 ```
+
+**Example Request (using cURL):**
+
+```bash
+# Upload a PDF document
+curl -X POST "https://localhost:7191/api/v1/ai/extract-from-document" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -F "file=@meeting-notes.pdf"
+
+# Upload a Word document
+curl -X POST "https://localhost:7191/api/v1/ai/extract-from-document" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -F "file=@project-plan.docx"
+
+# Upload an Outlook email message
+curl -X POST "https://localhost:7191/api/v1/ai/extract-from-document" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -F "file=@task-email.msg"
+```
+
+**Use Cases for .msg Files:**
+- 📧 Extract action items from project emails
+- 📅 Identify deadlines mentioned in email threads
+- 👥 Capture team member assignments from email distribution
+- 📎 Track referenced attachments and deliverables
+- 🔄 Convert email task requests into trackable tasks
 
 ### AI Setup Guide
 
@@ -899,9 +930,9 @@ The project includes HTTP test files for manual testing:
 ### Document Processing
 
 1. **Supported Formats**
-   - Only PDF, DOCX, and TXT files
-   - Scanned PDFs (images) not supported (would need OCR)
-   - Excel/CSV files not supported
+- Only PDF, DOCX, TXT, and MSG (Outlook email) files
+- Scanned PDFs (images) not supported (would need OCR)
+- Excel/CSV files not supported
 
 2. **File Size Limits**
    - Maximum upload size: 10 MB
@@ -967,10 +998,11 @@ The project includes HTTP test files for manual testing:
 **Error:** `Unsupported file type` or `File too large`
 
 **Solutions:**
-- Only PDF, DOCX, TXT files supported
+- Only PDF, DOCX, TXT, and MSG (Outlook email) files supported
 - Maximum file size is 10 MB
 - Check file is not corrupted
 - Verify Content-Type header
+- For .msg files, ensure they are valid Outlook message files
 
 #### 5. CORS Errors
 
@@ -991,26 +1023,6 @@ dotnet run --project TaskList.Api --environment Development
 Check logs in:
 - Console output
 - `logs/` folder (if file sink configured)
-
----
-
-## 🙏 Acknowledgments
-
-- [Microsoft Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/)
-- [OpenAI](https://openai.com/)
-- [Azure OpenAI Service](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- .NET Community
-
----
-
-## 📊 Project Stats
-
-- **Lines of Code**: ~5,000+
-- **API Endpoints**: 15+
-- **Database Tables**: 6+
-- **NuGet Packages**: 13+
-- **.NET Version**: 10.0
-- **C# Version**: 13
 
 ---
 
