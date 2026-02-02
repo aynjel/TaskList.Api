@@ -33,8 +33,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasConversion<string>();
 
             entity.Property(e => e.Status)
-                .HasConversion<string>()
-                .HasDefaultValue(TaskItemStatus.Todo);
+                .HasConversion<string>();
 
             entity.HasOne<ApplicationUser>()
                 .WithMany()
