@@ -46,8 +46,21 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
         
-        // Register AI services
-        services.AddScoped<IAiService, AiSummaryService>();
+        // Register AI services based on ServiceType
+        var aiSettings = configuration.GetSection("AiSettings");
+        var serviceType = aiSettings.GetValue<string>("ServiceType") ?? "AzureOpenAI";
+        
+        if (serviceType.Equals("GoogleGemini", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddScoped<IAiService, GoogleGeminiAiService>();
+            Console.WriteLine($"[AI Provider] Registered: Google Gemini (Model: {aiSettings.GetValue<string>("ModelId") ?? "gemini-2.0-flash-exp"})");
+        }
+        else
+        {
+            services.AddScoped<IAiService, AiSummaryService>();
+            Console.WriteLine($"[AI Provider] Registered: Azure OpenAI (Deployment: {aiSettings.GetValue<string>("DeploymentName")})");
+        }
+        
         services.AddScoped<IDocumentParserService, DocumentParserService>();
         
         // Register repositories

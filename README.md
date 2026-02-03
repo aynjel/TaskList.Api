@@ -39,7 +39,7 @@ TaskList API is a comprehensive task management system that leverages artificial
 ### Key Highlights
 
 - **RESTful API Design**: Clean, consistent API following REST principles
-- **AI-Powered Insights**: Natural language task summaries powered by GPT models
+- **AI-Powered Insights**: Natural language task summaries powered by Azure OpenAI or Google Gemini
 - **Document Intelligence**: Automatic task extraction from PDF, Word, Text, and Outlook email files
 - **Clean Architecture**: Separation of concerns with Domain-Driven Design
 - **Type-Safe**: Strong typing throughout the application
@@ -87,8 +87,9 @@ TaskList API is a comprehensive task management system that leverages artificial
 - **Entity Framework Core 10**: ORM for data access
 
 ### AI & ML
-- **Azure OpenAI**: GPT-4o-mini for AI capabilities
-- **Semantic Kernel 1.30**: Microsoft's AI orchestration framework
+- **Google Gemini**: Primary AI provider (Default)
+- **Azure OpenAI**: Alternative AI provider support
+- **Semantic Kernel 1.30**: Microsoft's AI orchestration framework (for Azure OpenAI)
 
 ### Authentication & Security
 - **JWT (JSON Web Tokens)**: Stateless authentication
@@ -101,6 +102,7 @@ TaskList API is a comprehensive task management system that leverages artificial
 - **iText7**: PDF processing
 - **DocumentFormat.OpenXml**: Word document processing
 - **MsgReader**: Outlook MSG file processing
+- **Mscc.GenerativeAI**: Google Gemini integration
 
 ---
 
@@ -219,19 +221,33 @@ Before you begin, ensure you have the following installed:
 
 3. **Configure AI Settings** (See [AI Setup Guide](#ai-setup-guide))
 
-   For **Azure OpenAI**:
-   ```json
-   {
-     "AiSettings": {
-       "ServiceType": "AzureOpenAI",
-       "ApiKey": "your-azure-openai-key",
-       "Endpoint": "https://your-resource.openai.azure.com/",
-       "DeploymentName": "gpt-4o-mini",
-       "MaxTokens": 2000,
-       "Temperature": 0.7
-     }
-   }
-   ```
+**Default Configuration (Google Gemini):**
+```json
+{
+  "AiSettings": {
+    "ServiceType": "GoogleGemini",
+    "ApiKey": "your-google-gemini-api-key",
+    "ModelId": "gemini-3-flash-preview",
+    "MaxTokens": 2000,
+    "Temperature": 0.7
+  }
+}
+```
+
+**Alternative (Azure OpenAI):**
+```json
+{
+  "AiSettings": {
+    "ServiceType": "AzureOpenAI",
+    "ApiKey": "your-azure-openai-key",
+    "Endpoint": "https://your-resource.openai.azure.com/",
+    "DeploymentName": "gpt-4o-mini",
+    "ModelId": "gpt-4o-mini",
+    "MaxTokens": 2000,
+    "Temperature": 0.7
+  }
+}
+```
 
 ### Database Setup
 
@@ -648,6 +664,7 @@ curl -X POST "https://localhost:7191/api/v1/ai/extract-from-document" \
        "ApiKey": "your-azure-key",
        "Endpoint": "https://your-resource.openai.azure.com/",
        "DeploymentName": "gpt-4o-mini",
+       "ModelId": "gpt-4o-mini",
        "MaxTokens": 2000,
        "Temperature": 0.7
      }
@@ -658,6 +675,73 @@ curl -X POST "https://localhost:7191/api/v1/ai/extract-from-document" \
    - In Azure Portal, go to your OpenAI resource
    - Click "Model deployments" or "Go to Azure OpenAI Studio"
    - Copy the "Deployment name" (not the model name)
+
+#### Using Google Gemini
+
+1. **Get Google AI API Key:**
+   - Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Sign in with your Google account
+   - Click "Create API Key"
+   - Copy your API key
+
+2. **Configure in `appsettings.json`:**
+   ```json
+   {
+     "AiSettings": {
+       "ServiceType": "GoogleGemini",
+       "ApiKey": "your-google-gemini-api-key",
+       "ModelId": "gemini-2.0-flash-exp",
+       "MaxTokens": 2000,
+       "Temperature": 0.7
+     }
+   }
+   ```
+
+3. **Available Models:**
+   - `gemini-2.0-flash-exp` - Latest experimental model (recommended)
+   - `gemini-1.5-pro` - Advanced reasoning and code generation
+   - `gemini-3-flash-preview` - Fast and efficient
+   - `gemini-pro` - Balanced performance
+
+#### Switching Between AI Providers
+
+The application supports seamless switching between Azure OpenAI and Google Gemini. Simply change the `ServiceType` in your configuration:
+
+**For Azure OpenAI:**
+```json
+{
+  "AiSettings": {
+    "ServiceType": "AzureOpenAI",
+    "ApiKey": "your-azure-key",
+    "Endpoint": "https://your-resource.openai.azure.com/",
+    "DeploymentName": "gpt-4o-mini",
+    "ModelId": "gpt-4o-mini",
+    "MaxTokens": 2000,
+    "Temperature": 0.7
+  }
+}
+```
+
+**For Google Gemini:**
+```json
+{
+  "AiSettings": {
+    "ServiceType": "GoogleGemini",
+    "ApiKey": "your-google-gemini-api-key",
+    "ModelId": "gemini-2.0-flash-exp",
+    "MaxTokens": 2000,
+    "Temperature": 0.7
+  }
+}
+```
+
+**Note:** When using Google Gemini, the `Endpoint` and `DeploymentName` fields are not required. When using Azure OpenAI, the `ModelId` is optional but recommended.
+
+Both providers support the same features:
+- ✅ AI-powered task summaries
+- ✅ Document extraction
+- ✅ Task insights and recommendations
+- ✅ Confidence scoring
 
 ---
 
